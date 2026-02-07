@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package mcp.gateway.v1;
+
+option go_package = "grpc-mcp-gateway/mcp/gateway/v1;mcp_gateway_v1";
+
+import "google/protobuf/descriptor.proto";
+
+message Tool {
+  string name = 1;
+  string title = 2;
+  string description = 3;
+  bool read_only = 4;
+  bool idempotent = 5;
+  bool destructive = 6;
+}
+
+message MethodOptions {
+  Tool tool = 1;
+}
+
+message ServiceOptions {
+  string name = 1;
+  string version = 2;
+}
+
+extend google.protobuf.MethodOptions {
+  MethodOptions mcp = 51234;
+}
+
+extend google.protobuf.ServiceOptions {
+  ServiceOptions mcp_service = 51235;
+}

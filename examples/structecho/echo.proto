@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package example.structecho.v1;
+
+import "google/protobuf/struct.proto";
+import "mcp/gateway/v1/annotations.proto";
+
+service EchoService {
+  rpc Echo(google.protobuf.Struct) returns (google.protobuf.Struct) {
+    option (mcp.gateway.v1.mcp) = {
+      tool: {
+        name: "echo"
+        title: "Echo"
+        description: "Echoes structured input back to the caller."
+        read_only: true
+      }
+    };
+  }
+}

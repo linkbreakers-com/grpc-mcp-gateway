@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package example.greeter.v1;
+
+import "mcp/gateway/v1/annotations.proto";
+
+option go_package = "grpc-mcp-gateway/examples/greeter;greeter";
+
+service Greeter {
+  rpc SayHello(HelloRequest) returns (HelloReply) {
+    option (mcp.gateway.v1.mcp) = {
+      tool: {
+        name: "greeter.say_hello"
+        title: "Say Hello"
+        description: "Greets a caller by name."
+        read_only: true
+      }
+    };
+  }
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
