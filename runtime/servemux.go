@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 )
@@ -12,9 +11,10 @@ import (
 // MCPServeMux is a stateless request multiplexer for MCP JSON-RPC requests.
 // It routes MCP tool calls to registered gRPC handlers.
 type MCPServeMux struct {
-	mu       sync.RWMutex
-	tools    map[string]*ToolHandler
-	metadata ServerMetadata
+	mu            sync.RWMutex
+	tools         map[string]*ToolHandler
+	metadata      ServerMetadata
+	requestLogger RequestLogger
 }
 
 // ToolHandler handles an MCP tool call by invoking a gRPC method
@@ -34,12 +34,34 @@ type ServerMetadata struct {
 	Version string
 }
 
-// NewMCPServeMux creates a new stateless MCP request multiplexer
-func NewMCPServeMux(metadata ServerMetadata) *MCPServeMux {
-	return &MCPServeMux{
-		tools:    make(map[string]*ToolHandler),
-		metadata: metadata,
+// RequestLogger handles MCP request logging.
+type RequestLogger func(ctx context.Context, req *MCPRequest)
+
+// Option configures the MCPServeMux.
+type Option func(*MCPServeMux)
+
+// WithRequestLogger sets the request logger for MCP requests.
+func WithRequestLogger(logger RequestLogger) Option {
+	return func(mux *MCPServeMux) {
+		if logger != nil {
+			mux.requestLogger = logger
+		}
 	}
+}
+
+// NewMCPServeMux creates a new stateless MCP request multiplexer
+func NewMCPServeMux(metadata ServerMetadata, opts ...Option) *MCPServeMux {
+	mux := &MCPServeMux{
+		tools:         make(map[string]*ToolHandler),
+		metadata:      metadata,
+		requestLogger: func(context.Context, *MCPRequest) {},
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(mux)
+		}
+	}
+	return mux
 }
 
 // RegisterTool registers a new tool handler
@@ -68,7 +90,7 @@ func (mux *MCPServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	logMCPRequest(&req)
+	mux.requestLogger(ctx, &req)
 
 	switch req.Method {
 	case "initialize":
@@ -80,21 +102,6 @@ func (mux *MCPServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		sendError(w, req.ID, -32601, fmt.Sprintf("Method not found: %s", req.Method))
 	}
-}
-
-func logMCPRequest(req *MCPRequest) {
-	if req == nil {
-		return
-	}
-	if req.Method == "tools/call" {
-		if name, ok := req.Params["name"].(string); ok && name != "" {
-			log.Printf("MCP tools/call %s", name)
-			return
-		}
-		log.Printf("MCP tools/call")
-		return
-	}
-	log.Printf("MCP %s", req.Method)
 }
 
 // MCPRequest represents an MCP JSON-RPC request
