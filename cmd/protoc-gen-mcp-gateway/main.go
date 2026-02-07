@@ -12,6 +12,7 @@ import (
 func main() {
 	opts := protogen.Options{}
 	opts.Run(func(plugin *protogen.Plugin) error {
+		plugin.SupportedFeatures = uint64(protogen.FeatureProto3Optional)
 		for _, file := range plugin.Files {
 			if !file.Generate {
 				continue
