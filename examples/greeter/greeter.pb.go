@@ -162,7 +162,7 @@ var file_greeter_proto_rawDescData = func() []byte {
 			},
 		},
 		Options: &descriptorpb.FileOptions{
-			GoPackage: proto.String("grpc-mcp-gateway/examples/greeter;greeter"),
+			GoPackage: proto.String("github.com/linkbreakers-com/grpc-mcp-gateway/examples/greeter;greeter"),
 		},
 	}
 	b, _ := proto.Marshal(fd)

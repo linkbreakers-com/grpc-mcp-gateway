@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"grpc-mcp-gateway/runtime"
+	"github.com/linkbreakers-com/grpc-mcp-gateway/runtime"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/types/known/structpb"

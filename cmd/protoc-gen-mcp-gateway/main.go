@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"grpc-mcp-gateway/internal/annotations"
+	"github.com/linkbreakers-com/grpc-mcp-gateway/internal/annotations"
 
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/pluginpb"
@@ -48,7 +48,7 @@ func generateFile(plugin *protogen.Plugin, file *protogen.File) {
 	g.P("\t\"context\"")
 	g.P("\t\"fmt\"")
 	g.P()
-	g.P("\t\"grpc-mcp-gateway/runtime\"")
+	g.P("\t\"github.com/linkbreakers-com/grpc-mcp-gateway/runtime\"")
 	g.P()
 	g.P("\t\"github.com/modelcontextprotocol/go-sdk/mcp\"")
 	g.P(")")

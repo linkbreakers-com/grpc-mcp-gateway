@@ -132,7 +132,7 @@ structured=map[...]
 
 A full end-to-end test (gRPC server + MCP gateway + MCP client) lives in:
 
-- `grpc-mcp-gateway/examples/greeter`
+- `github.com/linkbreakers-com/grpc-mcp-gateway/examples/greeter`
 
 Run the test:
 
