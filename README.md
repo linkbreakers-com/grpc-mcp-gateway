@@ -1,10 +1,22 @@
-# grpc-mcp-gateway
+# gRPC MCP Gateway
 
-grpc-mcp-gateway is a Go code generator that maps gRPC service methods to MCP tools using protobuf annotations, similar in spirit to grpc-gateway but targeting MCP instead of REST.
+`grpc-mcp-gateway` is a Go code generator that maps gRPC service methods to MCP tools using protobuf annotations, similar in spirit to `grpc-gateway` but targeting MCP instead of REST.
+
+## What Is MCP?
+
+MCP (Model Context Protocol) is a lightweight protocol that lets AI clients discover tools and call them over a simple JSON-RPC interface. It provides a standard way to expose capabilities (tools) so models can interact with your systems safely and consistently.
+
+## In Production
+
+This library is used in production at Linkbreakers. We open-sourced it to make it easy for any team with a Protobuf/gRPC API to add MCP support quickly, because we believe MCP will become an increasingly important way to integrate tools into AI workflows.
+
+- Linkbreakers: `https://linkbreakers.com`
+- Linkbreakers MCP server: `https://mcp.linkbreakers.com`
+- MCP directory listing: `https://mcp.so/server/linkbreakers`
 
 ## Status
 
-This is a minimal, working v0 that:
+This is a minimal, working version that:
 
 - Generates MCP tool registrations from annotated gRPC methods.
 - Bridges MCP tool calls to gRPC methods.
@@ -121,6 +133,31 @@ demov1.RegisterGreeterMCPHandler(handler, client)
 
 http.ListenAndServe(":8090", handler)
 ```
+
+## Minimal client request (curl)
+
+List tools:
+
+```bash
+curl -s http://localhost:8090/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+```
+
+Call a tool:
+
+```bash
+curl -s http://localhost:8090/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"greeter.say_hello","arguments":{"name":"Ada"}}}'
+```
+
+## Production notes
+
+- Add auth and token verification at the HTTP layer before the MCP handler.
+- Configure CORS if the MCP client runs in a browser or remote environment.
+- Set timeouts on the HTTP server and gRPC client to avoid hanging tool calls.
+- Use structured logging by passing `WithRequestLogger` in your MCP mux.
 
 ## Example client (end-to-end)
 
