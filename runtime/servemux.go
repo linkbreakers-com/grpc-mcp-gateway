@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 )
@@ -67,6 +68,7 @@ func (mux *MCPServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
+	logMCPRequest(&req)
 
 	switch req.Method {
 	case "initialize":
@@ -78,6 +80,21 @@ func (mux *MCPServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		sendError(w, req.ID, -32601, fmt.Sprintf("Method not found: %s", req.Method))
 	}
+}
+
+func logMCPRequest(req *MCPRequest) {
+	if req == nil {
+		return
+	}
+	if req.Method == "tools/call" {
+		if name, ok := req.Params["name"].(string); ok && name != "" {
+			log.Printf("MCP tools/call %s", name)
+			return
+		}
+		log.Printf("MCP tools/call")
+		return
+	}
+	log.Printf("MCP %s", req.Method)
 }
 
 // MCPRequest represents an MCP JSON-RPC request
