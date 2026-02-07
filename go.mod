@@ -1,4 +1,4 @@
-module grpc-mcp-gateway
+module github.com/linkbreakers-com/grpc-mcp-gateway
 
 go 1.23.0
 

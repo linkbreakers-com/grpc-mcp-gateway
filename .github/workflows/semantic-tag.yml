@@ -1,0 +1,18 @@
+name: Semantic Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Increment version tag
+        uses: RichardInnocent/semantic-versioning-git@v0.0.1
