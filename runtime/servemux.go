@@ -95,6 +95,10 @@ func (mux *MCPServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch req.Method {
 	case "initialize":
+		if req.ID == nil {
+			sendError(w, nil, -32600, "Missing request id")
+			return
+		}
 		mux.handleInitialize(w, ctx, req.ID)
 	case "notifications/initialized":
 		// Client notification that initialization is complete.
@@ -102,8 +106,16 @@ func (mux *MCPServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// Just acknowledge it silently by sending empty 204 response.
 		w.WriteHeader(http.StatusNoContent)
 	case "tools/list":
+		if req.ID == nil {
+			sendError(w, nil, -32600, "Missing request id")
+			return
+		}
 		mux.handleListTools(w, ctx, req.ID)
 	case "tools/call":
+		if req.ID == nil {
+			sendError(w, nil, -32600, "Missing request id")
+			return
+		}
 		mux.handleCallTool(w, ctx, req.ID, req.Params)
 	default:
 		// Per JSON-RPC 2.0 spec, notifications (requests with ID == nil) don't get error responses.
@@ -147,7 +159,9 @@ func (mux *MCPServeMux) handleInitialize(w http.ResponseWriter, ctx context.Cont
 			"version": mux.metadata.Version,
 		},
 		"capabilities": map[string]interface{}{
-			"tools": map[string]interface{}{},
+			"tools": map[string]interface{}{
+				"listChanged": false,
+			},
 		},
 	}
 
@@ -231,15 +245,36 @@ func (mux *MCPServeMux) handleCallTool(w http.ResponseWriter, ctx context.Contex
 		return
 	}
 
+	var text string
+	var structuredContent any
+	switch v := output.(type) {
+	case string:
+		text = v
+	case []byte:
+		text = string(v)
+	case nil:
+		text = "null"
+	default:
+		if b, marshalErr := json.Marshal(v); marshalErr == nil {
+			text = string(b)
+			structuredContent = v
+		} else {
+			text = fmt.Sprintf("%v", v)
+		}
+	}
+
 	// Format response
 	response := map[string]interface{}{
 		"content": []map[string]interface{}{
 			{
 				"type": "text",
-				"text": fmt.Sprintf("%v", output),
+				"text": text,
 			},
 		},
-		"structuredContent": output,
+		"isError": false,
+	}
+	if structuredContent != nil {
+		response["structuredContent"] = structuredContent
 	}
 
 	sendSuccess(w, id, response)

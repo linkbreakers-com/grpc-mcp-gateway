@@ -14,6 +14,7 @@ MCP (Model Context Protocol) is a lightweight protocol that lets AI clients disc
 - Generates strongly-typed JSON Schema for tool inputs derived from protobuf message definitions.
 - Provides a lightweight MCP HTTP handler (`runtime.MCPServeMux`) with pluggable request logging.
 - Keeps MCP tooling stateless (no sessions).
+- Implements MCP protocol version 2025-11-25 (JSON-RPC 2.0). See https://modelcontextprotocol.io/specification/2025-11-25/ for details.
 
 ## MCP annotations
 
