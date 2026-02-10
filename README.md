@@ -214,32 +214,51 @@ What is generated:
 - **`google.api.field_behavior`**: `OUTPUT_ONLY` fields are excluded from input schemas. `REQUIRED` fields are added to the `required` array.
 - **Descriptions**: Extracted from proto comments and included in the schema.
 
-Example generated schema for a `CreateMediaRequest`:
+Example — given this proto message:
+
+```proto
+message CreateTaskRequest {
+  // The title of the task
+  string title = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The priority level
+  Task.Priority priority = 2;
+
+  // Tags to associate with the task
+  repeated string tags = 3;
+}
+
+message Task {
+  enum Priority {
+    PRIORITY_UNSPECIFIED = 0;
+    PRIORITY_LOW = 1;
+    PRIORITY_HIGH = 2;
+  }
+}
+```
+
+The generator produces:
 
 ```go
 InputSchema: map[string]any{
     "additionalProperties": false,
     "properties": map[string]any{
-        "fileData": map[string]any{
-            "description": "The file data to upload.",
-            "format":      "byte",
+        "title": map[string]any{
+            "description": "The title of the task",
             "type":        "string",
         },
-        "fileName": map[string]any{
-            "description": "The name of the file",
+        "priority": map[string]any{
+            "description": "The priority level",
+            "enum":        []string{"PRIORITY_LOW", "PRIORITY_HIGH"},
             "type":        "string",
         },
-        "mediaType": map[string]any{
-            "description": "The type of media",
-            "enum":        []string{"TYPE_CENTRAL_QRCODE_IMAGE"},
-            "type":        "string",
-        },
-        "visibility": map[string]any{
-            "description": "The visibility of the media.",
-            "enum":        []string{"VISIBILITY_PUBLIC", "VISIBILITY_PRIVATE"},
-            "type":        "string",
+        "tags": map[string]any{
+            "description": "Tags to associate with the task",
+            "items":       map[string]any{"type": "string"},
+            "type":        "array",
         },
     },
+    "required": []string{"title"},
     "type": "object",
 },
 ```
