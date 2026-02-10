@@ -141,7 +141,7 @@ type MCPError struct {
 
 func (mux *MCPServeMux) handleInitialize(w http.ResponseWriter, ctx context.Context, id interface{}) {
 	result := map[string]interface{}{
-		"protocolVersion": "2024-11-05",
+		"protocolVersion": "2025-11-25",
 		"serverInfo": map[string]interface{}{
 			"name":    mux.metadata.Name,
 			"version": mux.metadata.Version,
