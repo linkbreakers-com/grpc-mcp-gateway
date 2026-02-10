@@ -1,0 +1,13 @@
+# Binaries
+complete-server
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Generated code
+*.pb.go
+*_mcp.pb.go
+
+# Go build artifacts
+go.sum

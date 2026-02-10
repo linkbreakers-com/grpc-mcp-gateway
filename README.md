@@ -151,6 +151,24 @@ curl -s http://localhost:8090/ \
 - Set timeouts on the HTTP server and gRPC client to avoid hanging tool calls.
 - Use structured logging by passing `WithRequestLogger` in your MCP mux.
 
+## Complete Production Example
+
+For a comprehensive, production-ready implementation showing all the best practices, see:
+
+**[examples/complete-server](./examples/complete-server/README.md)**
+
+This example demonstrates:
+- Bearer token authentication with JSON-RPC error handling
+- Request logging for all MCP protocol messages
+- Health check endpoints for Kubernetes
+- CORS configuration
+- Proper handling of `notifications/initialized`
+- Response recording for auth failure debugging
+- gRPC ↔ HTTP dual server architecture
+- Kubernetes deployment patterns
+
+Perfect for teams building production MCP servers.
+
 ## Example client (end-to-end)
 
 This repo includes a tiny MCP client that spawns the example server and calls the `echo` tool:
