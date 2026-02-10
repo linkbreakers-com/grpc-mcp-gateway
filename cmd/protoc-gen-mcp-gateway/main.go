@@ -118,6 +118,7 @@ func generateMethod(g *protogen.GeneratedFile, service *protogen.Service, method
 	g.P("\t\tName: ", fmt.Sprintf("%q", toolName), ",")
 	g.P("\t\tTitle: ", fmt.Sprintf("%q", toolTitle), ",")
 	g.P("\t\tDescription: ", fmt.Sprintf("%q", toolDescription), ",")
+	g.P("\t\tInputSchema: runtime.DefaultInputSchema(),")
 	if tool.ReadOnly {
 		g.P("\t\tReadOnly: true,")
 	}

@@ -22,6 +22,7 @@ type ToolHandler struct {
 	Name        string
 	Title       string
 	Description string
+	InputSchema map[string]any
 	ReadOnly    bool
 	Idempotent  bool
 	Destructive bool
@@ -166,6 +167,11 @@ func (mux *MCPServeMux) handleListTools(w http.ResponseWriter, ctx context.Conte
 		if tool.Title != "" {
 			t["title"] = tool.Title
 		}
+		if tool.InputSchema != nil {
+			t["inputSchema"] = tool.InputSchema
+		} else {
+			t["inputSchema"] = DefaultInputSchema()
+		}
 
 		annotations := make(map[string]interface{})
 		if tool.ReadOnly {
@@ -189,6 +195,15 @@ func (mux *MCPServeMux) handleListTools(w http.ResponseWriter, ctx context.Conte
 	}
 
 	sendSuccess(w, id, result)
+}
+
+// DefaultInputSchema provides a permissive object schema for tool inputs.
+func DefaultInputSchema() map[string]any {
+	return map[string]any{
+		"type":                 "object",
+		"properties":           map[string]any{},
+		"additionalProperties": true,
+	}
 }
 
 func (mux *MCPServeMux) handleCallTool(w http.ResponseWriter, ctx context.Context, id interface{}, params map[string]interface{}) {
